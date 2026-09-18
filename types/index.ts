@@ -1,0 +1,11 @@
+export type Category = 'SEO' | 'Performance' | 'Mobile' | 'Security' | 'Technical' | 'Content';
+export type Issue = { code: string; category: Category; severity: 'Critical' | 'High' | 'Medium' | 'Low' | 'Passed'; deduction: number; title: string; evidence: string; recommendation: string };
+export type Scores = Record<Category, number>;
+export type Audit = { url: string; scannedAt: string; overall: number; scores: Scores; issues: Issue[]; facts: Record<string, string | number | boolean | string[]>; limitations: string[]; performanceSource: string };
+export type PlanItem = { week: number; issueCodes: string[]; action: string };
+export type ReportContent = { audit: Audit; summary: string; strengths: string[]; recommendations: { issueCode: string; explanation: string }[]; plan: PlanItem[]; source: 'rules' | 'ai' };
+export type ScanPreview = Pick<Audit, 'overall' | 'scores' | 'performanceSource'> & { issues: Issue[] };
+export type ScanRow = { id: string; user_id: string | null; guest_hash: string | null; website_project_id: string | null; url: string; status: string; progress: number; stage: string; preview: ScanPreview | null; error: string | null; attempts: number; created_at: string; completed_at: string | null };
+export type PaymentRow = { id: string; user_id: string; report_id: string; provider: 'stripe' | 'payfast'; status: string; amount_cents: number; currency: string; base_usd_cents: number; discount_cents: number; provider_session_id: string | null; checkout_url: string | null; created_at: string };
+export type Settings = { base_price_cents: number; referral_discount_cents: number; referral_threshold: number; stripe_enabled: boolean; payfast_enabled: boolean; activity_enabled: boolean; ai_enabled: boolean };
+export type PublicStats = { registeredUsers: number; completedScans: number; reportsGenerated: number };

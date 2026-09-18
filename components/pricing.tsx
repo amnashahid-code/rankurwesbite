@@ -1,0 +1,7 @@
+'use client';
+import { useEffect, useState } from 'react';
+import { ArrowRight, Gift } from 'lucide-react';
+import Link from 'next/link';
+import { defaultPricing, money } from '@/lib/config';
+import { CheckList } from '@/components/ui';
+export function Pricing(){const [pricing,setPricing]=useState(defaultPricing);useEffect(()=>{fetch('/api/public/pricing').then(r=>r.ok?r.json():null).then(d=>{if(d)setPricing(d);}).catch(()=>{});},[]);return <div className="pricing-card"><div className="pricing-top"><h3 className="mb-0">The full picture.</h3><span className="pill">One-time payment</span></div><div className="price">{money(pricing.base_price_cents)} <span>/ report</span></div><p style={{fontSize:12}}>One website. Clear answers. No subscription.</p><CheckList items={['Complete audit across all six categories','Every detected issue, with clear next steps','Prioritized fixes and a 30-day action plan','Downloadable report you can keep','Saved in your private dashboard']}/><Link href="#analyze" className="button primary">Start with a free scan <ArrowRight size={14}/></Link><div className="referral-box"><strong><Gift size={14} style={{display:'inline',marginRight:8}}/>Better together. Save {money(pricing.referral_discount_cents)}.</strong><p>Refer {pricing.referral_threshold} verified users and get your report for <b>{money(pricing.base_price_cents-pricing.referral_discount_cents)}</b>. No points. No hidden conditions.</p></div></div>;}

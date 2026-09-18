@@ -1,0 +1,9 @@
+import { notFound,redirect } from 'next/navigation';
+import { Header } from '@/components/ui';
+import { currentUser } from '@/lib/security/http';
+import { adminDb } from '@/lib/supabase/server';
+import { payfastFields } from '@/lib/payments/payfast';
+import { money } from '@/lib/config';
+import type { PaymentRow } from '@/types';
+export const metadata={title:'Secure Pakistan checkout',robots:{index:false,follow:false},alternates:{canonical:null}};
+export default async function Checkout({params}:{params:Promise<{id:string}>}){const user=await currentUser();if(!user)redirect('/auth/sign-in');const {data:payment}=await adminDb().from('payments').select('*').eq('id',(await params).id).eq('user_id',user.id).eq('provider','payfast').in('status',['pending','processing']).single();if(!payment)notFound();const {data:report}=await adminDb().from('reports').select('scan_id').eq('id',payment.report_id).eq('user_id',user.id).single();if(!report)notFound();let checkout;let error='';try{checkout=await payfastFields(payment as PaymentRow,user.email!,report.scan_id);}catch(e){error=e instanceof Error?e.message:'Checkout unavailable.';}return <><Header/><main id="main" className="auth-page"><div className="auth-card"><div className="eyebrow">PAYFAST · PAKISTAN</div><h1>One more step.</h1><p>Your report costs {money(payment.amount_cents,payment.currency)}. The PKR amount is fixed for this checkout.</p>{checkout?<form action={checkout.action} method="POST">{Object.entries(checkout.fields).map(([name,value])=><input type="hidden" name={name} value={value} key={name}/>)}<button className="button primary">Continue to secure PayFast checkout</button></form>:<div className="error">{error}</div>}<p style={{marginTop:20,fontSize:11}}>Payment details are entered on PayFast. Your report unlocks only after server verification.</p></div></main></>;}

@@ -1,0 +1,6 @@
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import { api,body,originCheck,requireAdmin } from '@/lib/security/http';
+import { adminDb } from '@/lib/supabase/server';
+export async function GET(req:Request){return api(async()=>{await requireAdmin();const days=z.enum(['1','7','30','90','0']).parse(new URL(req.url).searchParams.get('days')||'30');const db=adminDb();const [analytics,settings]=await Promise.all([db.rpc('admin_analytics',{p_days:Number(days)}),db.from('app_settings').select('*').eq('id',true).single()]);if(analytics.error)throw analytics.error;if(settings.error)throw settings.error;return NextResponse.json({analytics:analytics.data,settings:settings.data},{headers:{'Cache-Control':'private, no-store'}});});}
+export async function PATCH(req:Request){return api(async()=>{originCheck(req);await requireAdmin();const input=z.object({base_price_cents:z.number().int().min(100).max(100000),referral_discount_cents:z.number().int().min(0).max(50),referral_threshold:z.number().int().min(5).max(1000),stripe_enabled:z.boolean(),payfast_enabled:z.boolean(),activity_enabled:z.boolean(),ai_enabled:z.boolean()}).parse(await body(req));const {error}=await adminDb().from('app_settings').update({...input,updated_at:new Date().toISOString()}).eq('id',true);if(error)throw error;return NextResponse.json({ok:true});});}
