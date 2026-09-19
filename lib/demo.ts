@@ -1,0 +1,25 @@
+import 'server-only';
+import { notFound } from 'next/navigation';
+import { analyzeHtml } from '@/lib/analyzer';
+import { ruleReport } from '@/lib/ai/report';
+import { defaultPricing } from '@/lib/config';
+import type { Settings,ScanRow } from '@/types';
+export function requireDemo(){if(process.env.ENABLE_DEMO!=='true'||process.env.NODE_ENV!=='development'||process.env.APP_ENV==='production')notFound();}
+export const demoSettings:Settings={...defaultPricing,stripe_enabled:true,payfast_enabled:true,activity_enabled:false,ai_enabled:false};
+const date='2026-09-18T10:30:00.000Z';
+const html='<!doctype html><html><head><title>Northstar Studio — Thoughtful websites for growing brands</title><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="canonical" href="https://example.com/"></head><body><h1>Good ideas deserve a great website.</h1><h2>What we do</h2><p>'+('We design clear accessible websites that help people find useful information. '.repeat(20))+'</p><a href="/work">Our work</a><img src="work.jpg"><img src="studio.jpg"></body></html>';
+export const demoAudit={...analyzeHtml({url:'https://example.com/',status:200,headers:{'content-type':'text/html','x-content-type-options':'nosniff'},body:html,bytes:42000,durationMs:680,redirects:0}),scannedAt:date};
+export const demoReport=ruleReport(demoAudit);
+export const demoScan:ScanRow={id:'demo-northstar',user_id:'demo-owner',guest_hash:null,website_project_id:'demo-project-1',url:'https://example.com/',status:'completed',progress:100,stage:'Report ready',preview:{overall:demoAudit.overall,scores:demoAudit.scores,performanceSource:demoAudit.performanceSource,issues:demoAudit.issues.filter(i=>i.deduction>0).sort((a,b)=>b.deduction-a.deduction).slice(0,3)},error:null,attempts:1,created_at:date,completed_at:date};
+export const demoData={
+ profile:{first_name:'Alex',referral_code:'demo-example',email_verified:true,is_admin:true},
+ projects:[{id:'demo-project-1',name:'Northstar Studio',url:'https://example.com/',notes:'Focus on metadata and image accessibility before the next launch.',created_at:date},{id:'demo-project-2',name:'The Sunday Journal',url:'https://example.org/',notes:'Review article templates and internal links.',created_at:'2026-09-15T09:00:00Z'},{id:'demo-project-3',name:'Form & Field',url:'https://example.net/',notes:'Check the new product collection pages.',created_at:'2026-09-12T09:00:00Z'}],
+ scans:[{...demoScan},{id:'demo-journal',url:'https://example.org/',status:'completed',preview:{overall:78},created_at:'2026-09-17T09:00:00Z',website_project_id:'demo-project-2'},{id:'demo-field',url:'https://example.net/',status:'completed',preview:{overall:86},created_at:'2026-09-16T09:00:00Z',website_project_id:'demo-project-3'},{id:'demo-previous',url:'https://example.com/',status:'completed',preview:{overall:74},created_at:'2026-09-14T09:00:00Z',website_project_id:'demo-project-1'}],
+ reports:[{id:'demo-report-1',scan_id:'demo-northstar',unlocked:true,created_at:date},{id:'demo-report-2',scan_id:'demo-journal',unlocked:false,created_at:'2026-09-17T09:00:00Z'},{id:'demo-report-3',scan_id:'demo-field',unlocked:true,created_at:'2026-09-16T09:00:00Z'}],
+ payments:[{id:'demo-payment-1',status:'paid',provider:'stripe',amount_cents:200,currency:'USD',created_at:date},{id:'demo-payment-2',status:'paid',provider:'stripe',amount_cents:200,currency:'USD',created_at:'2026-09-16T09:00:00Z'}],
+ referrals:[{status:'verified',converted:true,created_at:'2026-09-10T09:00:00Z',verified_at:'2026-09-11T09:00:00Z'},{status:'verified',converted:false,created_at:'2026-09-12T09:00:00Z',verified_at:'2026-09-12T10:00:00Z'},{status:'verified',converted:false,created_at:'2026-09-14T09:00:00Z',verified_at:'2026-09-14T10:00:00Z'},{status:'pending',converted:false,created_at:'2026-09-17T09:00:00Z',verified_at:null}],
+ keywords:[{id:'demo-keyword',keyword:'independent design studio',country:'us',website_project_id:'demo-project-1',ranking_checks:[] as {position:number|null;search_depth:number;checked_at:string}[]}],
+ events:[{event_type:'report_unlocked',created_at:date},{event_type:'website_scan_completed',created_at:date},{event_type:'report_generated',created_at:date},{event_type:'referral_verified',created_at:'2026-09-14T10:00:00Z'}],
+ metrics:{websites:3,scans:4,reports:2,average:Math.round((demoAudit.overall+78+86+74)/4),referrals:3,payments:2},
+};
+export const demoAnalytics={totals:{registered_users:12,completed_scans:28,reports_generated:28},newUsersToday:2,newUsersWeek:6,newUsersMonth:12,scans:{total:31,successful:28,failed:3},payments:{total:9,paid:8,failed:1,discountsUsed:2,revenueUsdCents:1500},reports:{total:28,paid:8,free:20},referralConversions:2,growth:[{day:'2026-09-12',users:1,scans:2,reports:2,revenueUsdCents:200},{day:'2026-09-13',users:2,scans:5,reports:5,revenueUsdCents:400},{day:'2026-09-14',users:0,scans:1,reports:1,revenueUsdCents:0},{day:'2026-09-15',users:3,scans:6,reports:6,revenueUsdCents:350},{day:'2026-09-16',users:1,scans:4,reports:4,revenueUsdCents:200},{day:'2026-09-17',users:3,scans:5,reports:5,revenueUsdCents:150},{day:'2026-09-18',users:2,scans:5,reports:5,revenueUsdCents:200}]};

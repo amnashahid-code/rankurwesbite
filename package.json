@@ -1,0 +1,43 @@
+{
+  "name": "rankyourwebsite",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:db": "vitest run tests/database.integration.test.ts",
+    "test:e2e": "playwright test",
+    "check:supabase": "node scripts/check-supabase.mjs",
+    "sql:setup": "node scripts/build-setup-sql.mjs"
+  },
+  "dependencies": {
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "@supabase/ssr": "latest",
+    "@supabase/supabase-js": "latest",
+    "zod": "latest",
+    "cheerio": "latest",
+    "ipaddr.js": "latest",
+    "stripe": "latest",
+    "lucide-react": "latest",
+    "server-only": "latest"
+  },
+  "devDependencies": {
+    "typescript": "latest",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "tailwindcss": "latest",
+    "@tailwindcss/postcss": "latest",
+    "eslint": "latest",
+    "eslint-config-next": "latest",
+    "vitest": "latest",
+    "@playwright/test": "latest",
+    "@electric-sql/pglite": "latest"
+  }
+}
